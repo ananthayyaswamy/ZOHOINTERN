@@ -111,12 +111,7 @@ public class Contact {
 
 	}
 
-	@Override
-	public String toString() {
-		return "Contact [firstName=" + firstName + ", lastName=" + lastName + ", company=" + company + ", homeNumber="
-				+ homeNumber + ", workNumber=" + workNumber + ", homeEmail=" + homeEmail + ", workEmail=" + workEmail
-				+ ", homeAddress=" + homeAddress + ", workAddress=" + workAddress + ", dob=" + dob + "]";
-	}
+	
 
 	public int getContacts(String fname, String lname) throws IOException {
 		File file = new File("javaContactDetails.txt");
