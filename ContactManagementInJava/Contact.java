@@ -2,7 +2,7 @@ import java.io.*;
 import java.util.InputMismatchException;
 import java.util.Scanner;
 
-public class Contact {
+public class Contact implements ContactInterface{
 
 	private String firstName;
 	private String lastName;
