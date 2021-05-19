@@ -41,6 +41,41 @@ connection.close();
 //addPhoneNumberIntoDatabase(contact, contactid);
 return contactid;
 }
+public void addUserContacts(UserContacts u){
+	Connection connection=connect();
+	String query="Insert into usercontacts(userid,contactid) values('"+u.getUserId()+"','"+u.getContactId()+"') ";
+	Statement statement;
+	try {
+		statement = connection.createStatement();
+		statement.executeUpdate(query);
+		connection.close();
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+	
+}
+public int addUser(String username,String password ){
+	Connection connection=connect();
+	String query="Insert into usertable(username,password) values('"+username+"','"+password+"') returning userid;";
+    PreparedStatement statement;
+	int userid=-1;
+    try {
+		statement = connection.prepareStatement(query);
+		statement.execute();
+		ResultSet rs=statement.getResultSet();
+		rs.next();
+		 userid=rs.getInt(1);
+		 connection.close();
+		System.out.println("user id="+userid);
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+    return userid;
+    
+}
 public int getContactId(String fname,String lname) throws SQLException{
 	//ArrayList<Integer> cid=new ArrayList<>();
 	int contactid=0;
@@ -109,6 +144,29 @@ public void editContact(int contactid,String field,String val,String table) thro
 	
 	connection.close();
 }
+public int UserExists(String username){
+	Connection connection=connect();
+	String query="select userid from usertable where username='"+username+"';";
+	Statement statement;
+	int rows=0;
+	try {
+		statement = connection.createStatement();
+		 statement.execute(query);
+		ResultSet rs=statement.getResultSet();
+		boolean recordFound=rs.next();
+		rs.next();
+		 if(recordFound){
+			 rows++;
+		 }
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	
+	return rows;
+	
+}
+
 public void editTypeContact(int contactid,String field,String val,String table,String type) throws SQLException{
 	Connection connection=connect();
 	String query="update "+table+" set "+field+"='"+val+"' where contactid="+contactid+" and type='"+type+"';";
@@ -133,6 +191,7 @@ public void editTypeContact(int contactid,String field,String val,String table,S
 	connection.close();
 	
 }
+
 public int deleteContact(int contactid,String table) throws SQLException{
 	Connection connection=connect();
 	String query="delete from "+table+" where contactid = "+contactid+" ;";
@@ -195,7 +254,25 @@ public void addAddressIntoDatabase(Contact contact,int contactid) throws SQLExce
 	}
 	connection.close();
 }
-
+public int getUserId(String fname,String password){
+	Connection connection=connect();
+	String query="select * from usertable where username = '"+fname+"' and password ='"+password+"' ;";
+	Statement statement;
+	int userid=-1;
+	try {
+		statement =connection.createStatement();
+		ResultSet rs=statement.executeQuery(query);
+		connection.close();
+		while(rs.next()){
+			//System.out.println(rs.getInt(1)); 
+		userid=rs.getInt(1);	
+		}
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return userid;
+}
 public ArrayList<Contact> SearchContact(String fname,String table) throws SQLException{
 	Connection connection=connect();
 	int count=0;
@@ -317,4 +394,75 @@ public Contact searchEmail(Contact contact,int contactid,String table ){
 	//System.out.println("get in search email"+contact.getEmailAddress());
 	return contact;
 }
+
+//public ArrayList<Integer> getContactid(int userid){
+//	Connection connection=connect();
+//	ArrayList<Integer> li=new ArrayList<>();
+//	String query="select contactid from usercontacts where userid="+userid+";";
+//	Statement statement;
+//	try {
+//		statement = connection.createStatement();
+//		ResultSet rs=statement.executeQuery(query);
+//		while(rs.next()){
+//			li.add(rs.getInt(1));
+//		}
+//		connection.close();
+//	} catch (SQLException e) {
+//		// TODO Auto-generated catch block
+//		e.printStackTrace();
+//	}
+//	return li;
+//}
+public ArrayList getContactid(int userid,String fname,String lname){
+	int contactid=-1;
+	ArrayList<Contact> li=new ArrayList<>();
+	Connection connection=connect();
+	String query="select * from contact where firstname='"+fname+"' and lastname='"+lname+"' and contactid in(select contactid from usercontacts where userid="+userid+"); ";
+	Statement statement;
+	try {
+		statement=connection.createStatement();
+		ResultSet rs=statement.executeQuery(query);
+		while(rs.next()){
+			Contact contact =new Contact();
+			contact.setContactid(rs.getInt(1));
+			contact.setFirstName(rs.getString(2));
+			contact.setLastName(rs.getString(3));
+			contact.setCompany(rs.getString(4));
+			contact.setDob(rs.getString(5));
+			
+			li.add(contact);
+		}
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return li;
 }
+public ArrayList getContactid(int userid){
+	int contactid=-1;
+	ArrayList<Contact> li=new ArrayList<>();
+	Connection connection=connect();
+	System.out.println("userid="+userid);
+	String query="select * from contact where contactid in(select contactid from usercontacts where userid="+userid+"); ";
+	Statement statement;
+	try {
+		statement=connection.createStatement();
+		ResultSet rs=statement.executeQuery(query);
+		while(rs.next()){
+			Contact contact =new Contact();
+			contact.setContactid(rs.getInt(1));
+			contact.setFirstName(rs.getString(2));
+			contact.setLastName(rs.getString(3));
+			contact.setCompany(rs.getString(4));
+			contact.setDob(rs.getString(5));
+			
+			li.add(contact);
+		}
+	} catch (SQLException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	return li;
+}
+}
+

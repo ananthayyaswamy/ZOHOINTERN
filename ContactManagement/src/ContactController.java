@@ -17,9 +17,9 @@ public class ContactController {
 
 	}
 
-	public void editContact(Contact contact, String fname, String lastname, String field) throws SQLException {
+	public void editContact(int contactid, String field) throws SQLException {
 
-		model.editContact(contact, fname, lastname, field);
+		model.editContact(contactid, field);
 
 	}
 

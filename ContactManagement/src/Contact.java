@@ -7,9 +7,17 @@ public class Contact {
 	private String lastName;
 	private String company;
 	private String dob;
+	public int getContactid() {
+		return contactid;
+	}
+
+	public void setContactid(int contactid) {
+		this.contactid = contactid;
+	}
 	private ArrayList<PhoneNumber> phoneNumber;
 	private ArrayList<EmailAddress> emailAddress;
 	private ArrayList<Address> address;
+	private int contactid;
 
 	public void setFirstName(String firstName) {
 		this.firstName = firstName;
@@ -74,14 +82,12 @@ public int addContact(Contact contact) throws SQLException{
 		return contactid;
 		
 	}
-	public void editContact(Contact contact,String fname,String lastname,String field ) throws SQLException{
+	public void editContact(int contactid,String field ) throws SQLException{
 		Scanner sc=new Scanner(System.in);
-		//System.out.println("enter the field you want to edit");
-		//String field=sc.nextLine();
 		System.out.println("enter the new value");
 		String value=sc.nextLine();
 		Database d=new Database();
-		int contactid=d.getContactId(fname, lastname);
+		//int contactid=d.getContactId(fname, lastname);
 		d.editContact(contactid, field, value,"contact");
 		
 		

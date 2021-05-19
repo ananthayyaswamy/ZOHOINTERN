@@ -38,10 +38,10 @@ public class EmailAddress {
 		db.addEmailIntoDatabase(contact, contactid);
 	}
 
-	public void editContact(Contact contact, String fname, String lastname) throws SQLException {
+	public void editContact(int contactid) throws SQLException {
 		Scanner sc = new Scanner(System.in);
 		Database d = new Database();
-		int contactid = d.getContactId(fname, lastname);
+		
 		System.out.println("enter the type of Email you want to edit");
 		String type = sc.nextLine();
 		System.out.println("Enter the new value");

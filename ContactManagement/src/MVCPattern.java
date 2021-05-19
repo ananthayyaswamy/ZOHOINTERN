@@ -12,8 +12,15 @@ public class MVCPattern {
 
 		int choice = -1;
 		boolean condition = true;
-
+		int userid;
+		User user=new User();
+		user =userLogin();
+		userid=user.getUserid();
+		System.out.println("user id in main="+userid);
 		while (condition) {
+			UserContacts userContacts=new UserContacts();
+			UserContactsView userContactsView=new UserContactsView();
+			UserContactsController userContactsController=new UserContactsController(userContacts, userContactsView);
 			new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
 			// clrscr();
 			System.out.println("CONTACT MANAGEMENT SYSTEM");
@@ -21,6 +28,7 @@ public class MVCPattern {
 			System.out.println("2.EDIT CONTACTS");
 			System.out.println("3.DELETE CONTACTS");
 			System.out.println("4.SEARCH CONTACTS");
+			System.out.println("5.Exports CONTACTS");
 			System.out.println("0.EXIT");
 			System.out.println("Please enter your choice");
 			choice = sc.nextInt();
@@ -35,6 +43,7 @@ public class MVCPattern {
 				ContactView view = new ContactView();
 				ContactController controller = new ContactController(contact, view);
 				int cid1 = controller.addContact(contact);
+				
 				PhoneNumber p = new PhoneNumber();
 				PhoneNumberView phoneNumberView = new PhoneNumberView();
 				PhoneNumberController phoneNumberController = new PhoneNumberController(p, phoneNumberView);
@@ -48,121 +57,69 @@ public class MVCPattern {
 				AddressView addressView = new AddressView();
 				AddressController addressController = new AddressController(a, addressView);
 				addressController.addAddress(cid1, contact);
+				userContacts.setUserId(userid);
+				userContacts.setContactId(cid1);
+				userContactsController.addUserContacts(userContacts);
 				System.out.println("CONTACT ADDED SUCCESSFULLY");
 				System.out.println("press enter to continue");
 				sc.nextLine();
 				break;
 
 			case 2:
-				sc.nextLine();
-				System.out.println("enter firstname");
-				fname = sc.nextLine();
-				System.out.println("enter lastname");
-				lname = sc.nextLine();
-				Contact contact1 = new Contact();
-				int choice1 = editContact();
-				String field = "";
-				if (choice1 >= 1 && choice1 <= 4) {
-					if (choice1 == 1) {
-						field = "firstname";
-					} else if (choice1 == 2) {
-						field = "lastname";
-					} else if (choice1 == 3) {
-						field = "company";
-					} else if (choice1 == 4) {
-						field = "dob";
-					}
-					ContactView view1 = new ContactView();
-					ContactController controller1 = new ContactController(contact1, view1);
-					controller1.editContact(contact1, fname, lname, field);
-				} else if (choice1 == 5) {
-					PhoneNumberView phoneNumberView1 = new PhoneNumberView();
-					PhoneNumber p1 = new PhoneNumber();
-					PhoneNumberController phoneNumberController1 = new PhoneNumberController(p1, phoneNumberView1);
-					phoneNumberController1.editContact(contact1, fname, lname);
-				} else if (choice1 == 6) {
-					EmailAddress e1 = new EmailAddress();
-					EmailAddressView emailAddressView1 = new EmailAddressView();
-					EmailAddressController emailAddressController1 = new EmailAddressController(e1, emailAddressView1);
-					emailAddressController1.editContact(contact1, fname, lname);
-
-				} else if (choice1 == 7) {
-					Address a1 = new Address();
-					AddressView addressView1 = new AddressView();
-					AddressController addressController1 = new AddressController(a1, addressView1);
-					addressController1.editContact(contact1, fname, lname);
-
-				}
+				newEditContact(userid);
 				break;
 
+
 			case 3:
-				sc.nextLine();
-				System.out.println("enter first name of the contact to delete");
-				fname = sc.nextLine();
-				System.out.println("enter last name of the contact to delete");
-				lname = sc.nextLine();
-				Contact contact2 = new Contact();
-				ContactView view1 = new ContactView();
-				ContactController controller1 = new ContactController(contact2, view1);
-				int cid = controller1.getcid(fname, lname);
-				PhoneNumber p2 = new PhoneNumber();
-				PhoneNumberView phoneNumberView1 = new PhoneNumberView();
-				PhoneNumberController phoneNumberController1 = new PhoneNumberController(p2, phoneNumberView1);
-				int value = phoneNumberController1.deleteContact(cid);
-				if (value == -1) {
-					break;
-				}
-				EmailAddress e2 = new EmailAddress();
-				EmailAddressView emailAddressView1 = new EmailAddressView();
-				EmailAddressController emailAddressController1 = new EmailAddressController(e2, emailAddressView1);
-				emailAddressController1.deleteContact(cid);
-				Address a2 = new Address();
-				AddressView addressView1 = new AddressView();
-				AddressController addressController1 = new AddressController(a2, addressView1);
-				addressController1.deleteContact(cid);
-				controller1.deleteContact(cid);
+				deleteContact(userid);
+
 				break;
 
 			case 4: {
-				sc.nextLine();
-				System.out.println("enter firstname of the contact to be searched ");
-				String fname1 = sc.nextLine();
-				Contact contact3 = new Contact();
-				ContactView view3 = new ContactView();
-				ContactController controller3 = new ContactController(contact3, view3);
-				ArrayList<Contact> li = controller3.searchContact(fname1);
-				// System.out.println("li===mvc"+li);
-				PhoneNumberView phoneNumberView3 = new PhoneNumberView();
-				PhoneNumber p4 = new PhoneNumber();
-				PhoneNumberController phoneNumberController3 = new PhoneNumberController(p4, phoneNumberView3);
-				phoneNumberController3.SearchContact(li);
-				EmailAddress e3 = new EmailAddress();
-				EmailAddressView emailAddressView3 = new EmailAddressView();
-				EmailAddressController emailAddressController3 = new EmailAddressController(e3, emailAddressView3);
-				emailAddressController3.SearchContact(li);
-				Address a3 = new Address();
-				AddressView addressView3 = new AddressView();
-				AddressController addressController3 = new AddressController(a3, addressView3);
-				addressController3.SearchContact(li);
+				searchContacts(userid);
+				break;
 
-				for (Contact c : li) {
-					controller3.display(c);
-					phoneNumberController3.display(c.getPhoneNumber());
-					emailAddressController3.display(c.getEmailAddress());
-					addressController3.display(c.getAddress());
-					System.out.println();
-				}
-				System.out.println("press enter to continue");
-				sc.nextLine();
-
+			}
+			case 5:{
+				export(user);
 				break;
 			}
-
+			case 0:return;
 			}
 
 		}
 	}
-
+public static void export(User user1) throws SQLException, IOException{
+	int userid=user1.getUserid();
+	Contact contact=new Contact();
+	ContactView contactView=new ContactView();
+	ContactController contactController=new ContactController(contact, contactView);
+	UserContacts user=new UserContacts();
+	UserContactsView userContactsView= new UserContactsView();
+	UserContactsController userContactsController =new UserContactsController(user, userContactsView);
+	ArrayList<Contact> li=userContactsController.getContactid(userid);
+	if(li.size()==0){
+		System.out.println("NO MATCHING VALUES");
+		System.out.println("press enter to continue");
+		sc.nextLine();
+		return;
+	}
+	PhoneNumberView phoneNumberView1 = new PhoneNumberView();
+	PhoneNumber p1 = new PhoneNumber();
+	PhoneNumberController phoneNumberController1 = new PhoneNumberController(p1, phoneNumberView1);
+	phoneNumberController1.SearchContact(li);
+	EmailAddress e1 = new EmailAddress();
+	EmailAddressView emailAddressView1 = new EmailAddressView();
+	EmailAddressController emailAddressController1 = new EmailAddressController(e1, emailAddressView1);
+	emailAddressController1.SearchContact(li);
+	Address a1 = new Address();
+	AddressView addressView1 = new AddressView();
+	AddressController addressController1 = new AddressController(a1, addressView1);
+	addressController1.SearchContact(li);
+	VCFFile vcfFile=new VCFFile();
+	vcfFile.exportVcf(li, user1);
+	
+}
 	private static Contact addContact() {
 		int choice = -1;
 		Contact contact = new Contact();
@@ -307,4 +264,214 @@ public class MVCPattern {
 		return choice;
 	}
 
+	public static User userLogin(){
+		int userid=-1;
+		while(true){
+		 System.out.println("1.Login In");
+		
+		 System.out.println("Enter 1 to continue");
+		 int choice=sc.nextInt();
+		switch(choice){
+		case 1:{
+			System.out.println("LOGIN");
+			sc.nextLine();
+			System.out.println("Enter username");
+			String username=sc.nextLine();
+			System.out.println("Enter Password");
+			String password=sc.nextLine();
+			User user=new User();
+			user.setPassword(password);
+			user.setUser(username);
+			UserView userview=new UserView();
+			UserController userController=new UserController(user, userview);
+			int value =userController.UserExits(username) ;
+			
+			if(value==0){
+				
+			userid=	userController.addUser(username, password);
+			System.out.println("user id in login="+userid);
+			user.setUserid(userid);
+				System.out.println("new user created");
+				System.out.println("press enter to continue");
+				sc.nextLine();
+			}else{
+				//System.out.println("else");
+				userid=userController.getUserId(username,password);
+				user.setUserid(userid);
+				if(userid==-1){
+					System.out.println("Wrong Credentials try agin");
+					System.out.println("press enter to continue");
+					sc.nextLine();
+					break;
+				}else{
+					System.out.println("LOGGED IN SUCCESSFULLY");
+					
+						
+						System.out.println("press enter to continue");
+						sc.nextLine();
+					
+					return user;
+				}
+				
+			}
+			break;
+		}
+		}
+		}
+	}
+	
+	
+	public static void newEditContact(int userid) throws SQLException{
+		sc.nextLine();
+		System.out.println("Enter first name");
+		String fname=sc.nextLine();
+		System.out.println("Enter last name");
+		String lname=sc.nextLine();
+	
+		Contact contact=new Contact();
+		ContactView contactView=new ContactView();
+		ContactController contactController=new ContactController(contact, contactView);
+		UserContacts user=new UserContacts();
+		UserContactsView userContactsView= new UserContactsView();
+		UserContactsController userContactsController =new UserContactsController(user, userContactsView);
+		ArrayList<Contact> li=userContactsController.getContactid(userid, fname, lname);
+		//System.out.println(li);
+		if(li.size()==0){
+			System.out.println("NO MATCHING VALUES");
+			System.out.println("press enter to continue");
+			sc.nextLine();
+			return;
+		}
+		for(Contact c:li){
+			contactController.display(c);
+		}
+		System.out.println("confirm the contact id of record to be deleted");
+		int contactid=sc.nextInt();
+		int choice =-1;
+
+		System.out.println("1. Edit firstname");
+		System.out.println("2. Edit lastname");
+		System.out.println("3. Edit company");
+		System.out.println("4. Edit dob");
+		System.out.println("5. Edit Phone number");
+		System.out.println("6. Edit  email");
+		System.out.println("7. Edit  Address");
+		System.out.println("Enter choice to continue");
+		choice=sc.nextInt();
+		switch (choice){
+		case 1:
+			contactController.editContact(contactid,"firstname");
+			break;
+		case 2:
+			contactController.editContact(contactid,"lastname");
+			break;
+		case 3:
+			contactController.editContact(contactid,"company");
+			break;
+		case 4:
+			contactController.editContact(contactid,"dob");
+			break;
+		case 5:
+			PhoneNumberView phoneNumberView1 = new PhoneNumberView();
+			PhoneNumber p1 = new PhoneNumber();
+			PhoneNumberController phoneNumberController1 = new PhoneNumberController(p1, phoneNumberView1);
+			phoneNumberController1.editContact(contactid);
+			break;
+		case 6:
+			EmailAddress e1 = new EmailAddress();
+			EmailAddressView emailAddressView1 = new EmailAddressView();
+			EmailAddressController emailAddressController1 = new EmailAddressController(e1, emailAddressView1);
+			emailAddressController1.editContact(contactid);
+			break;
+		case 7:
+			Address a1 = new Address();
+			AddressView addressView1 = new AddressView();
+			AddressController addressController1 = new AddressController(a1, addressView1);
+			addressController1.editContact(contactid);
+			break;
+			
+		}
+		
+		
+	}
+	public static void deleteContact(int userid) throws SQLException{
+		sc.nextLine();
+		System.out.println("Enter first name");
+		String fname=sc.nextLine();
+		System.out.println("Enter last name");
+		String lname=sc.nextLine();
+		Contact contact=new Contact();
+		ContactView contactView=new ContactView();
+		ContactController contactController=new ContactController(contact, contactView);
+		UserContacts user=new UserContacts();
+		UserContactsView userContactsView= new UserContactsView();
+		UserContactsController userContactsController =new UserContactsController(user, userContactsView);
+		ArrayList<Contact> li=userContactsController.getContactid(userid, fname, lname);
+		//System.out.println(li);
+		if(li.size()==0){
+			System.out.println("NO MATCHING VALUES");
+			System.out.println("press enter to continue");
+			sc.nextLine();
+			return;
+		}
+		for(Contact c:li){
+			contactController.display(c);
+		}
+		System.out.println("confirm the contact id of record to be deleted");
+		int contactid=sc.nextInt();
+		PhoneNumberView phoneNumberView1 = new PhoneNumberView();
+		PhoneNumber p1 = new PhoneNumber();
+		PhoneNumberController phoneNumberController1 = new PhoneNumberController(p1, phoneNumberView1);
+		phoneNumberController1.deleteContact(contactid);
+		EmailAddress e1 = new EmailAddress();
+		EmailAddressView emailAddressView1 = new EmailAddressView();
+		EmailAddressController emailAddressController1 = new EmailAddressController(e1, emailAddressView1);
+		emailAddressController1.deleteContact(contactid);
+		Address a1 = new Address();
+		AddressView addressView1 = new AddressView();
+		AddressController addressController1 = new AddressController(a1, addressView1);
+		addressController1.deleteContact(contactid);
+		userContactsController.deleteUser(contactid);
+		contactController.deleteContact(contactid);
+	}
+	
+	public static void searchContacts(int userid) throws SQLException{
+		sc.nextLine();
+		System.out.println("Enter first name");
+		String fname=sc.nextLine();
+		System.out.println("Enter last name");
+		String lname=sc.nextLine();
+		Contact contact=new Contact();
+		ContactView contactView=new ContactView();
+		ContactController contactController=new ContactController(contact, contactView);
+		UserContacts user=new UserContacts();
+		UserContactsView userContactsView= new UserContactsView();
+		UserContactsController userContactsController =new UserContactsController(user, userContactsView);
+		ArrayList<Contact> li=userContactsController.getContactid(userid, fname, lname);
+		if(li.size()==0){
+			System.out.println("NO MATCHING VALUES");
+			System.out.println("press enter to continue");
+			sc.nextLine();
+			return;
+		}
+		PhoneNumberView phoneNumberView1 = new PhoneNumberView();
+		PhoneNumber p1 = new PhoneNumber();
+		PhoneNumberController phoneNumberController1 = new PhoneNumberController(p1, phoneNumberView1);
+		phoneNumberController1.SearchContact(li);
+		EmailAddress e1 = new EmailAddress();
+		EmailAddressView emailAddressView1 = new EmailAddressView();
+		EmailAddressController emailAddressController1 = new EmailAddressController(e1, emailAddressView1);
+		emailAddressController1.SearchContact(li);
+		Address a1 = new Address();
+		AddressView addressView1 = new AddressView();
+		AddressController addressController1 = new AddressController(a1, addressView1);
+		addressController1.SearchContact(li);
+		System.out.println(li);
+		for(Contact c:li){
+			contactController.display(c);
+			phoneNumberController1.display(c.getPhoneNumber());
+			emailAddressController1.display(c.getEmailAddress());
+			addressController1.display(c.getAddress());
+		}
+	}
 }

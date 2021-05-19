@@ -5,5 +5,6 @@ public class ContactView {
 		System.out.println("lastname : " + contact.getLastName());
 		System.out.println("company :" + contact.getCompany());
 		System.out.println("dob : " + contact.getDob());
+		System.out.println("cid :"+ contact.getContactid());
 	}
 }
